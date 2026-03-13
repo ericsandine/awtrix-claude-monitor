@@ -45,10 +45,12 @@ if [ ! -d "$INSTALL_DIR/.venv" ]; then
     echo ""
     echo "Creating Python venv..."
     python3 -m venv "$INSTALL_DIR/.venv"
-    "$INSTALL_DIR/.venv/bin/pip" install --quiet requests
+    "$INSTALL_DIR/.venv/bin/pip" install --quiet requests iterm2
     echo "  Installed Python dependencies"
 else
-    echo "  Python venv already exists (skipping)"
+    # Ensure iterm2 package is installed in existing venv
+    "$INSTALL_DIR/.venv/bin/pip" install --quiet iterm2 2>/dev/null
+    echo "  Python venv already exists (ensuring iterm2 package installed)"
 fi
 
 # --- Add hooks to settings.json ---
@@ -73,7 +75,10 @@ settings = json.loads(settings_path.read_text())
 hooks = {
     "PreToolUse": [{"hooks": [{"type": "command", "command": "~/.claude/awtrix/hook.sh active", "async": True}]}],
     "Stop": [{"hooks": [{"type": "command", "command": "~/.claude/awtrix/hook.sh waiting", "async": True}]}],
-    "Notification": [{"matcher": "idle_prompt", "hooks": [{"type": "command", "command": "~/.claude/awtrix/hook.sh idle", "async": True}]}],
+    "Notification": [
+        {"matcher": "idle_prompt", "hooks": [{"type": "command", "command": "~/.claude/awtrix/hook.sh idle", "async": True}]},
+        {"matcher": "permission_prompt", "hooks": [{"type": "command", "command": "~/.claude/awtrix/hook.sh waiting", "async": True}]},
+    ],
     "SessionStart": [{"hooks": [{"type": "command", "command": "~/.claude/awtrix/hook.sh start", "async": True}]}],
     "SessionEnd": [{"hooks": [{"type": "command", "command": "~/.claude/awtrix/hook.sh end", "async": True}]}],
 }
@@ -92,14 +97,37 @@ PYEOF
     fi
 fi
 
+# --- Add cc() shell function ---
+echo ""
+ZSHRC="${HOME}/.zshrc"
+if [ -f "$ZSHRC" ]; then
+    if grep -q "awtrix-claude-monitor/cc.sh" "$ZSHRC" 2>/dev/null; then
+        echo "cc() function already sourced in .zshrc (skipping)"
+    else
+        echo "" >> "$ZSHRC"
+        echo "# AWTRIX Claude Code session launcher (tab titles + Ulanzi display)" >> "$ZSHRC"
+        echo "source ${REPO_DIR}/cc.sh" >> "$ZSHRC"
+        echo "  Added cc() function to .zshrc"
+    fi
+else
+    echo "Warning: ~/.zshrc not found. Add this to your shell config manually:"
+    echo "  source ${REPO_DIR}/cc.sh"
+fi
+
 echo ""
 echo "Install complete!"
 echo ""
 echo "Next steps:"
 echo "  1. Edit ~/.claude/awtrix/config.env and set AWTRIX_IP to your Ulanzi's IP"
-echo "  2. (Optional) Upload ~/.claude/awtrix/icons/claude.gif to your AWTRIX web UI"
-echo "  3. Launch Claude Code — the renderer starts automatically"
+echo "  2. In iTerm2: Settings > General > Magic > Enable Python API"
+echo "  3. Reload your shell: source ~/.zshrc"
+echo "  4. Launch sessions with: cc BA backend"
 echo ""
-echo "  Manual start:  ~/.claude/awtrix/.venv/bin/python3 ~/.claude/awtrix/renderer.py"
+echo "Usage:"
+echo "  cc BA backend        # Tab title 'BA', runs: cambly claude backend"
+echo "  cc FE frontend       # Tab title 'FE', runs: cambly claude frontend"
+echo "  cc CA                # Tab title 'CA', runs: cambly claude (root)"
+echo "  cc MY ~/my-project   # Tab title 'MY', runs: claude in that directory"
+echo ""
 echo "  Stop renderer: ~/.claude/awtrix/stop-renderer.sh"
 echo "  View logs:     tail -f ~/.claude/awtrix/renderer.log"

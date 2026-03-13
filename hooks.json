@@ -32,6 +32,16 @@
             "async": true
           }
         ]
+      },
+      {
+        "matcher": "permission_prompt",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/awtrix/hook.sh waiting",
+            "async": true
+          }
+        ]
       }
     ],
     "SessionStart": [

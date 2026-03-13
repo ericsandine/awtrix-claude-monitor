@@ -65,8 +65,6 @@ STATUS_COLORS = {
     "offline": {"bg": "#222222", "bg_dim": "#222222", "text": "#555555"},
 }
 
-INDICATOR_ENDPOINTS = ["/api/indicator1", "/api/indicator2", "/api/indicator3"]
-
 
 # --- Session State ---
 
@@ -148,34 +146,6 @@ def build_draw_commands(sessions, max_sessions, tick):
     return draw
 
 
-def build_indicator_colors(sessions, max_sessions, tick):
-    """Build indicator LED colors for the 3 corner indicators."""
-    indicators = []
-    for i in range(3):
-        if i < len(sessions) and i < max_sessions:
-            state = sessions[i].get("state", "offline")
-            colors = STATUS_COLORS.get(state, STATUS_COLORS["offline"])
-            color = colors["bg"]
-            blink = None
-            fade = None
-
-            if state == "waiting":
-                blink = 500  # Blink every 500ms
-            elif state == "idle":
-                fade = 2000  # Slow fade
-
-            indicator = {"color": color}
-            if blink:
-                indicator["blink"] = blink
-            if fade:
-                indicator["fade"] = fade
-            indicators.append(indicator)
-        else:
-            indicators.append({"color": [0, 0, 0]})  # Off
-
-    return indicators
-
-
 # --- AWTRIX API ---
 
 
@@ -206,19 +176,11 @@ def update_display(base_url, sessions, max_sessions, tick):
     if sessions and tick % 5 == 0:
         awtrix_post(base_url, "/api/switch", {"name": "claude"})
 
-    # Update indicator LEDs
-    indicators = build_indicator_colors(sessions, max_sessions, tick)
-    for i, indicator in enumerate(indicators):
-        awtrix_post(base_url, INDICATOR_ENDPOINTS[i], indicator)
-
 
 def clear_display(base_url):
     """Clear the claude app and indicators on exit."""
     # Remove custom app by sending empty payload
     awtrix_post(base_url, "/api/custom?name=claude", {})
-    # Turn off indicators
-    for endpoint in INDICATOR_ENDPOINTS:
-        awtrix_post(base_url, endpoint, {"color": [0, 0, 0]})
 
 
 # --- Main Loop ---

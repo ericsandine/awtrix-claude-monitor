@@ -79,7 +79,7 @@ Each label gets a consistent color from a 6-color palette so you can visually di
 ## Install
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/awtrix-claude-monitor.git
+git clone https://github.com/ericsandine/awtrix-claude-monitor.git
 cd awtrix-claude-monitor
 ./install.sh
 ```

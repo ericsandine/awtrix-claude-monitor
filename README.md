@@ -204,6 +204,23 @@ awtrix-claude-monitor/          # Git repo
     └── claude.gif
 ```
 
+## Changing WiFi (e.g., moving to a new location)
+
+The Ulanzi TC001 stores one WiFi network. To switch:
+
+1. **Power on** the Ulanzi at the new location — when it can't find the old network, it enters AP mode after ~30 seconds (or hold the **middle button** during boot to force it)
+2. Connect to the **`awtrix_XXXXX`** hotspot from your phone or laptop
+3. A captive portal opens — enter the new WiFi credentials
+4. The device reboots and connects to the new network (it briefly shows its new IP on the display)
+5. Update your config:
+   ```bash
+   # Set the new IP
+   nano ~/.claude/awtrix/config.env
+
+   # Restart renderer (or it auto-starts on next cc session)
+   ~/.claude/awtrix/stop-renderer.sh
+   ```
+
 ## Troubleshooting
 
 | Issue | Fix |
@@ -214,6 +231,14 @@ awtrix-claude-monitor/          # Git repo
 | Tab title gets overwritten | Enable iTerm2 Python API: Settings > General > Magic > Enable Python API |
 | `cc` command not found | Run: `source ~/.zshrc` |
 | Wrong session label | Pass explicit label: `cc MY backend` |
+
+## Roadmap
+
+- [ ] **macOS menu bar widget** — SwiftUI/AppKit status bar app showing session statuses with colored dots, click to switch to the correct iTerm2 tab
+- [ ] **Clock fallback** — automatically switch AWTRIX back to clock when all sessions end, manual toggle via menu bar widget
+- [ ] **Sound alerts** — AWTRIX RTTTL buzzer when a session needs input (configurable)
+- [ ] **6-session compact mode** — smaller blocks with single-char labels for >3 sessions
+- [ ] **launchd plist** — auto-start renderer on macOS login
 
 ## License
 

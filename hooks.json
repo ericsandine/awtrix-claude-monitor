@@ -44,6 +44,7 @@
         ]
       }
     ],
+    "UserPromptSubmit": [{"hooks": [{"type": "command", "command": "~/.claude/awtrix/hook.sh active", "async": true}]}],
     "SessionStart": [
       {
         "hooks": [

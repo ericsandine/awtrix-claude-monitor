@@ -219,6 +219,7 @@ def main():
 
     signal.signal(signal.SIGTERM, handle_signal)
     signal.signal(signal.SIGINT, handle_signal)
+    signal.signal(signal.SIGHUP, signal.SIG_IGN)  # survive terminal close
 
     tick = 0
     last_sessions_hash = None

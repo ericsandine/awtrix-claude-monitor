@@ -79,6 +79,7 @@ hooks = {
         {"matcher": "idle_prompt", "hooks": [{"type": "command", "command": "~/.claude/awtrix/hook.sh idle", "async": True}]},
         {"matcher": "permission_prompt", "hooks": [{"type": "command", "command": "~/.claude/awtrix/hook.sh waiting", "async": True}]},
     ],
+    "UserPromptSubmit": [{"hooks": [{"type": "command", "command": "~/.claude/awtrix/hook.sh active", "async": True}]}],
     "SessionStart": [{"hooks": [{"type": "command", "command": "~/.claude/awtrix/hook.sh start", "async": True}]}],
     "SessionEnd": [{"hooks": [{"type": "command", "command": "~/.claude/awtrix/hook.sh end", "async": True}]}],
 }
